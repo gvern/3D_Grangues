@@ -205,3 +205,52 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# 3D reconstruction / COLMAP generated artifacts
+# Raw extracted video frames (source video frames should be kept separately if needed)
+frames/
+frames_all/
+
+# Video sources (optionally ignore if large originals kept elsewhere)
+Videos/
+
+# COLMAP workspaces & databases (regenerable)
+colmap_ws/
+colmap_ws_test/
+database.db*
+
+# Generic reconstruction run outputs
+runs/
+outputs/
+
+# COLMAP dense/sparse intermediate folders that can appear in various run directories
+**/sparse/
+**/dense/
+**/mvs/
+**/stereo/depth_maps/
+**/stereo/normal_maps/
+**/stereo/consistency_graphs/
+
+# Common artifact file types (point clouds / meshes / models) - comment out if you want to version final results
+*.ply
+*.obj
+*.bin
+*.npz
+*.npy
+*.las
+*.laz
+
+# Reconstruction logs & reports
+reconstruction.log
+**/colmap_output.log
+
+# Cache folders
+colmap_cache/
+
+# Temporary files
+*.tmp
+*.lock
+*.pid
+
+# macOS Finder metadata
+.DS_Store
