@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "siteId": "domaine-grangues-3d",
+  "referenceFrame": {
+    "horizontalCRS": "EPSG:2154",
+    "origin": [477616.19, 6910397.86, 112.79],
+    "axes": "x-east-y-up-z-south",
+    "verticalDatum": "unverified-IGN-model-reference"
+  },
+  "sources": [
+    {
+      "id": "drone-exterior",
+      "label": "Relevé drone extérieur",
+      "role": "exterior",
+      "format": "3d-tiles",
+      "availability": "pending",
+      "provenance": {"provider": "ATIS.cloud", "note": "Partage consulté ; export et coordonnées non accessibles pendant l’audit."}
+    },
+    {
+      "id": "polycam-interior",
+      "label": "Intérieurs Polycam",
+      "role": "interior",
+      "format": "glb",
+      "availability": "pending",
+      "provenance": {"provider": "Polycam", "note": "Capture à venir ; prévoir un maillage texturé et des points de recalage communs."}
+    }
+  ]
+}

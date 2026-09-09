@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#172b2d">
+  <title>Domaine de Grangues · Maquette 3D</title>
+  <meta name="description" content="Explorer le château, les dépendances et les parcelles du domaine de Grangues, et préparer des scénarios de transformation dans une maquette de travail 3D.">
+  <link rel="stylesheet" href="./style.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+</head>
+<body>
+  <header class="topbar">
+    <button class="menu-toggle" id="menu-toggle" aria-label="Afficher les outils" aria-expanded="true">☰</button>
+    <div class="brand"><span class="brand-mark">G</span><div><strong>Domaine de Grangues</strong><span>CHÂTEAU & PARC</span></div></div>
+    <nav class="tabs" aria-label="Atelier"><button class="active" data-tab="explore">Explorer</button><button data-tab="project">Imaginer</button><button data-tab="references">Références</button></nav>
+    <button class="version" id="about-button">Maquette de travail <span>V0.3</span></button>
+  </header>
+  <main class="workspace">
+    <aside class="sidebar" id="sidebar">
+      <section id="panel-explore" class="panel">
+        <div class="eyebrow">1515 ROUTE DES HAUTS DE GRANGUES</div>
+        <h1>Le domaine</h1>
+        <div class="metrics"><div><strong id="area">—</strong><span>hectares modélisés¹</span></div><div><strong id="parcel-count">19</strong><span>parcelles du plan</span></div></div>
+        <div class="section-title">Points de vue</div>
+        <div class="view-grid"><button data-view="castle" class="active">Est · Grand escalier</button><button data-view="garden">Ouest · Jardin de buis</button><button data-view="lightwells">Nord · Cour anglaise</button><button data-view="terrace">Sud · Terrasse</button><button data-view="outbuildings">Dépendances</button><button data-view="estate">Tout le domaine</button><button data-view="outbuildings-rear">Arrière des dépendances</button><button data-view="garden-detail">Détail des buis ouest</button><button data-view="east-parking">Parking est et buis</button></div>
+        <details class="sources survey-panel" open>
+          <summary>Relevés 3D</summary>
+          <p id="survey-status" role="status" class="caption">Relevés en attente de préparation.</p>
+          <button id="survey-model" class="secondary wide active">Maquette du domaine</button>
+          <div id="survey-sources"></div>
+          <label class="field">Qualité d’affichage<select id="survey-quality"><option value="mobile">Économe</option><option value="desktop">Détaillée</option></select></label>
+          <details><summary>Configurer les relevés</summary><p class="caption">Charger une configuration préparée pour les relevés extérieurs et les étages. Elle reste active dans cette session.</p><button id="survey-import" class="text-button">Ouvrir une configuration</button><input id="survey-file" type="file" accept=".json,application/json" hidden></details>
+        </details>
+        <div class="section-title">Dans la maquette</div>
+        <label class="switch-row">Limites des parcelles<input type="checkbox" id="show-parcels" checked><span class="switch"></span></label>
+        <label class="switch-row">Arbres et bosquets<input type="checkbox" id="show-trees" checked><span class="switch"></span></label>
+        <label class="switch-row">Photographie aérienne<input type="checkbox" id="show-ortho" checked><span class="switch"></span></label>
+        <div class="parcel-heading"><div class="section-title">Parcelles du domaine</div><button id="deselect">Tout voir</button></div>
+        <div id="parcel-list" class="parcel-list"></div>
+        <p class="caption">¹ Surface géométrique calculée sur les contours utilisés. Le périmètre suit ton plan et ta confirmation.</p>
+      </section>
+      <section id="panel-project" class="panel" hidden>
+        <div class="eyebrow">ÉTUDIER UNE TRANSFORMATION</div><h1>Imaginer</h1>
+        <p class="intro">Place un volume d’étude, ajuste ses dimensions et observe son insertion dans le parc.</p>
+        <button id="add-volume" class="primary wide">+ Ajouter un volume d’étude</button>
+        <div id="volume-list" class="volume-list"></div>
+        <div id="volume-editor" hidden>
+          <div class="section-title">Volume sélectionné</div>
+          <label class="field">Nom<input id="volume-name" maxlength="60" value="Volume d’étude"></label>
+          <div class="field-grid"><label class="field">Largeur (m)<input type="number" id="volume-width" min="1" max="100" step="0.5" value="8"></label><label class="field">Profondeur (m)<input type="number" id="volume-depth" min="1" max="100" step="0.5" value="5"></label><label class="field">Hauteur (m)<input type="number" id="volume-height" min="0.1" max="30" step="0.1" value="3"></label><label class="field">Rotation (°)<input type="number" id="volume-rotation" min="-360" max="360" step="5" value="0"></label></div>
+          <button id="place-volume" class="secondary wide">Placer sur le terrain</button><p id="place-help" class="caption">Puis clique ou touche un point du terrain.</p>
+          <button id="remove-volume" class="text-button danger">Supprimer ce volume</button>
+        </div>
+        <div class="section-title">Aspect du château</div>
+        <label class="field">Façades<select id="wall-finish"><option value="existing">Teinte inspirée des photos</option><option value="light">Pierre claire</option><option value="warm">Pierre chaude</option></select></label>
+        <label class="field">Toiture<select id="roof-finish"><option value="existing">Ardoise patinée</option><option value="restored">Ardoise uniforme</option></select></label>
+        <label class="switch-row">Voir le scénario<input type="checkbox" id="show-project" checked><span class="switch"></span></label>
+        <div class="section-title">Conserver le travail</div>
+        <button id="save-project" class="secondary wide">Télécharger le scénario</button><button id="load-project" class="text-button">Ouvrir un scénario enregistré</button><input id="project-file" type="file" accept="application/json,.json" hidden>
+        <p class="caption">Les modifications restent dans cette session. Télécharge le scénario pour les retrouver.</p>
+        <button id="export-glb" class="secondary wide">Exporter la maquette 3D (.glb)</button>
+        <p class="caption">L’export conserve la maquette et les volumes d’étude. Les relevés chargés restent dans leurs fichiers d’origine.</p>
+        <a class="text-button download-base" href="./assets/domaine-grangues.glb" download="domaine-grangues.glb">Télécharger la maquette actuelle (.glb)</a>
+        <p class="caption">Volumes indicatifs : les dimensions des bâtiments existants doivent être vérifiées avant de concevoir des travaux.</p>
+      </section>
+      <section id="panel-references" class="panel" hidden>
+        <div class="eyebrow">LES DOCUMENTS DU PROJET</div><h1>Références</h1><p class="intro">Les trente et une photographies et le plan qui servent de base à la reconstitution.</p><div id="photo-list" class="photo-list"></div>
+        <details class="sources" open><summary>Sources et précision</summary><div id="source-details"></div></details>
+      </section>
+    </aside>
+    <section class="viewport" id="viewport" aria-label="Maquette 3D interactive du domaine">
+      <div id="scene" tabindex="0" aria-label="Vue 3D. Faire glisser pour tourner, utiliser la molette pour zoomer. Les boutons de vue permettent aussi de naviguer."></div>
+      <div class="canvas-top"><span class="scene-tag" id="scene-tag">EST · GRAND ESCALIER</span><div class="projection"><button id="perspective-view" class="active">3D</button><button id="plan-view">Plan</button></div></div>
+      <div class="scene-tools"><button id="zoom-in" aria-label="Se rapprocher">+</button><button id="zoom-out" aria-label="S’éloigner">−</button><button id="reset-view" aria-label="Revenir au château">⌂</button></div>
+      <div class="light-control"><label for="sun-angle">Lumière</label><input id="sun-angle" type="range" min="-130" max="130" value="-50" aria-label="Direction du soleil"><button id="capture" aria-label="Télécharger une image de la vue">Photo</button></div>
+      <div class="canvas-bottom"><span id="navigation-help">Glisser : tourner · Molette : zoomer · Clic droit : déplacer</span><button id="precision-button">Géométrie de travail · détails estimés</button></div>
+      <div class="loading" id="loading"><div class="spinner"></div><strong>Préparation du domaine</strong><span>Terrain, parcelles et bâtiments</span></div>
+      <div class="error" id="error" hidden><strong>La vue 3D n’a pas pu démarrer.</strong><p id="error-message">Essaie avec un navigateur compatible WebGL 2.</p><button id="error-references">Consulter les photos et le plan</button></div>
+      <div class="toast" id="toast" role="status" hidden></div>
+    </section>
+  </main>
+  <dialog id="photo-dialog"><button class="dialog-close" id="photo-close" aria-label="Fermer la photographie">×</button><img id="photo-full" alt=""><div class="photo-caption"><strong id="photo-title"></strong><button id="photo-camera">Voir cette zone en 3D</button></div></dialog>
+  <dialog id="about-dialog"><button class="dialog-close" id="about-close" aria-label="Fermer">×</button><div class="about-content"><div class="eyebrow">UNE BASE POUR CONCEVOIR LA SUITE</div><h2>Ce que représente la maquette</h2><div id="about-details"></div><p>Cette première version sert à examiner l’implantation et les volumes. Le niveau ultraréaliste demandé nécessitera des vues rapprochées et continues des façades, des textures de meilleure définition et un contrôle des dimensions.</p><p>Les volumes ajoutés sont des études visuelles. Aucun travail n’est appliqué par défaut à l’existant.</p></div></dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
