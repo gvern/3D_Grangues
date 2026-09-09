@@ -1,6 +1,25 @@
 # 3D_Grangues
 Modélisation 3D de Grangues
 
+## Structure du dépôt
+
+```
+web/                     maquette 3D (viewer Three.js) + la couche relevés 3D
+                          (nuage extérieur ATIS, futurs étages Polycam) — voir web/README.md
+scripts/pointcloud.../    scripts d'intégration des relevés — voir scripts/align-survey.py,
+                          scripts/build-survey-vendor.mjs
+scripts/*.sh              pipeline photogrammétrie vidéo -> COLMAP (ci-dessous, inchangé)
+tests/                     tests automatisés (node --test / unittest — voir docs/INTEGRATION-RELEVES.md)
+docs/
+  AUDIT-INTEGRATION-3D.md   audit du site déployé et du nuage de points ATIS
+  INTEGRATION-RELEVES.md    contrat des données, budgets, fichiers ajoutés
+  RECEPTION-RELEVES.md      exports et informations à obtenir (ATIS, Polycam)
+  RECOVERY-NOTES.md         ce qui a été trouvé cassé après fusion et corrigé (9 sept. 2026)
+```
+
+Pour lancer le site en local et reproduire les vérifications automatisées :
+voir `docs/INTEGRATION-RELEVES.md` (§ « Construire et vérifier ») ou `docs/RECOVERY-NOTES.md`.
+
 ## Extract frames from videos (FFmpeg)
 
 Most photogrammetry tools work with images, not raw video. Use FFmpeg to extract frames at a regular interval, then feed those images to your photogrammetry software (Metashape, Meshroom, COLMAP, RealityCapture, etc.).

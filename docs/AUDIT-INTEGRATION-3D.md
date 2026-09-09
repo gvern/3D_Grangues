@@ -17,8 +17,8 @@ Le partage ATIS fourni, version `base`, redirige dans le navigateur d’audit ve
 | Élément | Constat dans les fichiers |
 |---|---|
 | Frontend | HTML, CSS, modules JavaScript ; pas de React, de serveur applicatif ni de base de données |
-| Moteur | Three.js 0.180.0, dépendances conservées dans `dist/vendor`, import map locale |
-| Démarrage | `dist/index.html` charge `app.js`, qui lit `domain.json` et `photos.json`, puis l’orthophotographie et construit la scène |
+| Moteur | Three.js 0.180.0, dépendances conservées dans `web/vendor`, import map locale |
+| Démarrage | `web/index.html` charge `app.js`, qui lit `domain.json` et `photos.json`, puis l’orthophotographie et construit la scène |
 | Géométrie | `scene.js` expose `buildDomain()`, les groupes du domaine, le terrain interpolé et les vues |
 | Navigation | Caméra perspective, OrbitControls, cadrages prédéfinis, vue verticale avec nord en haut |
 | Conception | Placement, dimensions, rotation de volumes ; teintes des façades et de la toiture |
@@ -80,7 +80,34 @@ La branche ajoute un manifeste contrôlé, deux adaptateurs réels (GLB et tuile
 
 Le paquet npm sert uniquement à reconstruire les adaptateurs optionnels : le site reste statique. Versions figées : Three.js 0.180.0, 3d-tiles-renderer 0.5.2 et esbuild 0.25.12. Les deux bundles optionnels représentent environ 85 ko gzip au total ; les décodeurs WASM sont des fichiers supplémentaires chargés si nécessaires. Ce poids ne mesure pas celui des futurs relevés.
 
-Les vérifications passent : 11 tests JavaScript, 4 tests Python, construction des bundles, syntaxe JavaScript et contrôle existant de la géométrie. Les tests utilisent des fichiers **synthétiques** : lecture GLB et PNTS sur serveur HTTP local, positionnement avec RTC, raffinement d’un niveau grossier vers un niveau détaillé à l’approche de la caméra, contrôle des tailles et erreurs HTTP, libération du cache, courses entre chargements, axes et recalage. Ces tests n’exécutent pas le rendu GPU.
+**Correctif du 9 septembre 2026 :** la branche fusionnée dans `main` (PR #1) ne contenait
+en réalité ni `web/vendor/` (le moteur Three.js de base — le site ne pouvait donc plus
+démarrer du tout, import map cassée), ni les fichiers `tests/`, `scripts/verify-model.mjs`
+et `scripts/module-loader.mjs` que `package.json` référence, et le script de build
+(`scripts/build-survey-vendor.mjs`) écrivait dans `dist/vendor/surveys` — un chemin qui
+n'existe pas dans ce dépôt (`web/`, pas `dist/`). Le paragraphe ci-dessous décrivait donc
+des vérifications qui n'étaient pas exécutables telles quelles sur ce que contenait
+réellement `main`. Voir `docs/RECOVERY-NOTES.md` pour le détail de ce qui a été restauré
+et corrigé, et les chiffres réels ci-dessous.
+
+Les vérifications qui passent aujourd'hui sur ce dépôt, réellement exécutées : 17 tests
+JavaScript (`node --test tests/*.test.mjs`, `web/surveys/manifest.js` — validation du
+manifeste, du repère, de la matrice de recalage, des URLs, des profils), 15 tests Python
+(`python3 -m unittest discover -s tests`, `scripts/align-survey.py` — recalage rigide et
+avec échelle contre une transformation connue, rejet d'une réflexion, statut
+contrôlé/non contrôlé), une vérification de géométrie (`npm run verify:model`,
+`scripts/verify-model.mjs` — fait tourner `buildDomain()` sur un jeu de données
+synthétique et vérifie l'absence de valeurs non finies, la présence de tous les groupes
+attendus par `mountSurveys()`), la construction des bundles (`npm run build`) et un
+chargement réel de `web/index.html` dans un navigateur headless (aucune erreur de
+résolution de module, dégradation propre vers l'état d'erreur en l'absence de
+`domain.json`/`ortho.jpg`). Ce que ces vérifications-ci ne couvrent PAS, et qui reste à
+faire : les tests HTTP décrits plus haut dans ce paragraphe avant correction — lecture
+réelle de GLB/PNTS servis en HTTP, raffinement LOD à l'approche de la caméra, libération
+du cache, course entre chargements annulés — n'ont pas été reconstruits (ils nécessitent
+un serveur HTTP de fixtures synthétiques imitant le format `3d-tiles-renderer`/glTF ; ce
+travail n'a pas été fait ici). `web/surveys/loaders.js` et `web/surveys/session.js`
+restent donc non couverts par un test automatisé dans ce dépôt.
 
 Restent à valider avec les données : rendu visuel, décodage GPU des textures compressées, trous de couverture, qualité du raccord intérieur/extérieur, débit, temps de première vue, mémoire et FPS sur ordinateurs et téléphones réels. Aucun chiffre de performance du nuage ATIS n’est avancé.
 

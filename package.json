@@ -8,7 +8,7 @@
     "build": "node scripts/build-survey-vendor.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:alignment": "python3 -m unittest discover -s tests -p 'test_*.py'",
-    "verify:model": "node --experimental-loader ./scripts/module-loader.mjs scripts/verify-model.mjs"
+    "verify:model": "node scripts/verify-model.mjs"
   },
   "devDependencies": {
     "3d-tiles-renderer": "0.5.2",

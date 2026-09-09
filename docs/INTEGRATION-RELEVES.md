@@ -6,14 +6,22 @@ Cette branche est un prototype vérifié par tests CPU, préparé depuis le code
 
 | Fichier | Responsabilité |
 |---|---|
-| `dist/assets/surveys.json` | Configuration initiale ; drone et Polycam en attente |
-| `dist/surveys/manifest.js` | Repère, validation, matrices, URLs et profils |
-| `dist/surveys/loaders.js` | GLB borné, streaming de tuiles, décodeurs et destruction des ressources |
-| `dist/surveys/session.js` | Sélection, annulation, erreurs, capture active unique |
-| `dist/surveys/controller.js` | Caméra existante, UI, mémorisation des vues et visibilité des groupes |
+| `web/assets/surveys.json` | Configuration initiale ; drone et Polycam en attente |
+| `web/surveys/manifest.js` | Repère, validation, matrices, URLs et profils |
+| `web/surveys/loaders.js` | GLB borné, streaming de tuiles, décodeurs et destruction des ressources |
+| `web/surveys/session.js` | Sélection, annulation, erreurs, capture active unique |
+| `web/surveys/controller.js` | Caméra existante, UI, mémorisation des vues et visibilité des groupes |
 | `scripts/align-survey.py` | Transformation par points homologues et rapport de résidus |
-| `scripts/build-survey-vendor.mjs` | Reconstruction reproductible des dépendances optionnelles |
-| `tests/` | Repère, recalage, chargements, raffinement LOD et cycle de vie |
+| `scripts/build-survey-vendor.mjs` | Reconstruction reproductible des dépendances optionnelles (écrit dans `web/vendor/surveys/`) |
+| `scripts/verify-model.mjs` | Fait tourner `buildDomain()` sur un jeu de données synthétique et vérifie l'absence de géométrie non finie et la présence des groupes attendus |
+| `tests/manifest.test.mjs` | 17 tests : repère, validation du manifeste, matrice de recalage, URLs, profils (`variantFor`) |
+| `tests/test_alignment.py` | 15 tests : recalage rigide/à échelle contre une transformation connue, rejet d'une réflexion, statut contrôlé/non contrôlé, conversion Lambert-93 |
+
+Note (9 septembre 2026) : les chemins `dist/...` de ce tableau et le raffinement LOD/tests
+HTTP GLB-PNTS mentionnés plus loin dans ce document décrivaient les sources externes d'où
+cette branche a été préparée, pas ce dépôt — ce dépôt utilise `web/`, pas `dist/`, et les
+tests HTTP/LOD n'ont jamais été commités ici (`tests/` ne contenait que les deux fichiers
+ci-dessus au moment de la fusion). Voir `docs/RECOVERY-NOTES.md`.
 
 Les modifications de `app.js` se limitent au montage du contrôleur, à sa mise à jour dans la boucle de rendu, aux règles de navigation et à la restitution de la maquette pour les outils de conception. `scene.js`, les parcelles, les façades et les scénarios existants sont réutilisés.
 

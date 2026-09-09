@@ -2,7 +2,7 @@ import { build } from 'esbuild';
 import { mkdir, copyFile, writeFile } from 'node:fs/promises';
 
 // Build only the new optional adapters. Preserve the existing vendored Three engine.
-const output='dist/vendor/surveys';
+const output='web/vendor/surveys';
 await mkdir(output,{recursive:true});
 const entries = {
   loaders: `export {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
